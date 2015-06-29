@@ -49,12 +49,12 @@ namespace Unity3dAzure.MobileServices
         /// <summary>
         /// TODO: Service login (using GET via webview)
         /// </summary>
-		/*
+        /*
         public void Login(MobileServiceAuthenticationProvider provider)
         {
             Debug.Log("TODO");
         }
-		//*/
+        //*/
         
         /// <summary>
         // TODO: Implement custom API (using GET request)

@@ -40,7 +40,6 @@ namespace Unity3dAzure.MobileServices
             string uri = URI_TABLES + _name;
             ZumoRequest request = new ZumoRequest(_client, uri, Method.GET);
             Debug.Log( "Read Request: " + uri );
-            List<T> items = new List<T>();
             _client.ExecuteAsync<List<T>>(request, callback);
         }
         
@@ -49,7 +48,6 @@ namespace Unity3dAzure.MobileServices
             string uri = string.Format("{0}{1}{2}", URI_TABLES, _name, query);
             ZumoRequest request = new ZumoRequest(_client, uri, Method.GET);
             Debug.Log( "Query Request: " + uri );
-            List<T> items = new List<T>();
             _client.ExecuteAsync<List<T>>(request, callback);
         }
         
