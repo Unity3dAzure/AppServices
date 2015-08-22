@@ -66,5 +66,6 @@ namespace Unity3dAzure.MobileServices
             Debug.Log( "Custom API Request Uri: " + uri );
             this.ExecuteAsync(request, callback);
         }
+
     }
 }

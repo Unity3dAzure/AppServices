@@ -1,7 +1,8 @@
 # Azure Mobile Services for Unity3d
 For game developers looking to use Azure Mobile Services in their Unity3D project. 
 
-The REST service implements [UnityRestClient](https://github.com/ProjectStratus/UnityRestClient) which uses the JsonFx plugin. Works in UnityEditor, iOS and Android. 
+The REST service implements [UnityRestClient](https://github.com/ProjectStratus/UnityRestClient) which uses the JsonFx plugin. 
+Runs in UnityEditor and works on iOS, Android and Windows. 
 
 ## How to add MobileServices into Unity3d project
 1. [Download UnityRestClient](https://github.com/ProjectStratus/UnityRestClient/archive/master.zip)
