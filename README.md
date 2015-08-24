@@ -1,14 +1,11 @@
 # Azure Mobile Services for Unity3d
 For game developers looking to use Azure Mobile Services in their Unity3D project. 
 
-Project will run inside UnityEditor and works on multiple platforms: iOS, Android and Windows. 
-This demo project has everything bundled in and does not require any additional assets to work. 
-The REST service implements [UnityRestClient](https://github.com/ProjectStratus/UnityRestClient) which uses the [JsonFx](https://bitbucket.org/TowerOfBricks/jsonfx-for-unity3d-git/) plugin. 
-
+Also available as a [MobileServices Demo Project](https://github.com/Unity3dAzure/MobileServicesDemo) which will run inside UnityEditor and on iOS, Android and Windows. The demo project has got everything bundled in and does not require any additional assets to work. If you want to integrate with an existing Unity3d project then follow instructions below:
 
 ## How to add MobileServices into Unity3d project
 1. [Download UnityRestClient](https://github.com/ProjectStratus/UnityRestClient/archive/master.zip)
- 	* Copy 'plugins' and 'Source' into project `Assets` folder
+ 	* Copy JsonFx 'plugins' and the UnityRestClient 'Source' into project `Assets` folder
 2. [Download MobileServices](https://github.com/Unity3dAzure/MobileServices/archive/master.zip)  
 	* Copy 'MobileServices' into project `Assets` folder. 
 3. [Create a Mobile Service](https://manage.windowsazure.com)
@@ -84,6 +81,7 @@ private void OnReadItemsCompleted(IRestResponse<List<TodoItem>> response) {
 }
 ```
 
-
+## Dependencies
+The REST service implements [UnityRestClient](https://github.com/ProjectStratus/UnityRestClient) which uses [JsonFx](https://bitbucket.org/TowerOfBricks/jsonfx-for-unity3d-git/) to parse JSON data. 
 
 Questions or tweet #Azure #GameDev [@deadlyfingers](https://twitter.com/deadlyfingers)
