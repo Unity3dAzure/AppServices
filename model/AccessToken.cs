@@ -11,5 +11,8 @@
 		{
 			access_token = accessTokenValue;
 		}
+
+        /// Needed only for Serialization (Fixes error: AccessToken cannot be serialized. Consider marking it with the DataContractAttribute attribute, and marking all of its members you want serialized with the DataMemberAttribute attribute)
+        public AccessToken() {}
     }
 }

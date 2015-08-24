@@ -1,8 +1,8 @@
 # Azure Mobile Services for Unity3d
-For game developers looking to use Azure Mobile Services in their Unity3D project. 
+For game developers looking to use Azure Mobile Services[^1] in their Unity3D project. 
 
-The REST service implements [UnityRestClient](https://github.com/ProjectStratus/UnityRestClient) which uses the JsonFx plugin. 
-Runs in UnityEditor and works on iOS, Android and Windows. 
+
+The REST service implements [UnityRestClient](https://github.com/ProjectStratus/UnityRestClient) which uses the JsonFx plugin. Works in UnityEditor, iOS and Android. 
 
 ## How to add MobileServices into Unity3d project
 1. [Download UnityRestClient](https://github.com/ProjectStratus/UnityRestClient/archive/master.zip)
@@ -43,8 +43,7 @@ Lookup | Get an item’s data using id property.
 
 
 ## Sample usage
-
-```csharp
+```
 using UnityEngine;
 using System;
 using System.Net;
@@ -52,24 +51,25 @@ using System.Collections.Generic;
 using RestSharp;
 using Pathfinding.Serialization.JsonFx;
 using Unity3dAzure.MobileServices;
+
 ```
 
-```csharp
+```
 private MobileServiceClient _client;
 private MobileServiceTable<TodoItem> _table;
 ```
 
-```csharp
+```
 void Start () {
 	_client = new MobileServiceClient(appUrl, appKey); // <- add your app connection strings here.
 	_table = _client.GetTable<TodoItem>("TodoItem");
 }
 ```
-
-```csharp
+```
 private void ReadItems() {
 	_table.Read<TodoItem>(OnReadItemsCompleted);
 }
+
 private void OnReadItemsCompleted(IRestResponse<List<TodoItem>> response) {
 	if ( response.StatusCode == HttpStatusCode.OK) {
 		Debug.Log("OnReadItemsCompleted data: " + response.Content);
@@ -82,4 +82,8 @@ private void OnReadItemsCompleted(IRestResponse<List<TodoItem>> response) {
 }
 ```
 
-Questions or tweet #Azure #GameDev [@deadlyfingers](https://twitter.com/deadlyfingers)
+
+
+Questions or tweet #GameDev [@deadlyfingers](https://twitter.com/deadlyfingers)
+
+[^1]: Azure Mobile Services is also known as Mobile Apps an Azure App Service.
