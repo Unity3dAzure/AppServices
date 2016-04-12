@@ -35,13 +35,19 @@ namespace Unity3dAzure.MobileServices
             #endif
         }
 
-    		/// <summary>
-    		/// Creates a new RestClient using Azure App Service's Application Url
-    		/// </summary>
-    		public MobileServiceClient(string appUrl) : base(appUrl)
-    		{
-          AppUrl = appUrl;
-    		}
+    	/// <summary>
+    	/// Creates a new RestClient using Azure App Service's Application Url
+    	/// </summary>
+    	public MobileServiceClient(string appUrl) : base(appUrl)
+    	{
+            AppUrl = appUrl;
+
+            // required for running in Windows and Android
+            #if !NETFX_CORE || UNITY_ANDROID
+            Debug.Log("ServerCertificateValidation");
+            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+            #endif
+        }
 
         public override string ToString()
         {
