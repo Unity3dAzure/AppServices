@@ -7,7 +7,7 @@ using System;
 using RestSharp.Deserializers;
 using System.Reflection;
 
-namespace Unity3dAzure.MobileServices
+namespace Unity3dAzure.AppServices
 {
     public class MobileServiceTable<E> : IAzureMobileServiceTable
     {

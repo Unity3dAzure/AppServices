@@ -1,15 +1,17 @@
-# Azure Mobile Services for Unity3d
-For game developers looking to use Azure Mobile Services or Azure App Services in their Unity3D project.
+# Azure App Services for Unity3d
+For game developers looking to use Azure App Services (previously Mobile Services) in their Unity project.
 
-Also available as a [MobileServices Demo Project](https://github.com/Unity3dAzure/MobileServicesDemo) which will run inside UnityEditor on Mac or Windows. It will also work with iOS, Android and Windows Universal Apps. The demo project has got everything bundled in and does not require any additional assets to work. If you want to integrate with an existing Unity3D project then follow instructions below:
-
-## How to add MobileServices into Unity3d project
+## How to setup App Services with a new Unity project
 1. [Download UnityRestClient](https://github.com/ProjectStratus/UnityRestClient/archive/master.zip)
  	* Copy JsonFx 'plugins' and the UnityRestClient 'Source' into project `Assets` folder
-2. [Download MobileServices](https://github.com/Unity3dAzure/MobileServices/archive/master.zip)  
-	* Copy 'MobileServices' into project `Assets` folder.
-3. Create an [Azure Mobile Service](https://manage.windowsazure.com) or an [Azure App Service](https://portal.azure.com)
-	* Create a table for app data.
+2. [Download AppServices](https://github.com/Unity3dAzure/AppServices/archive/master.zip)  
+	* Copy 'AppServices' into project `Assets` folder.
+3. Create an Azure App Service [Mobile App](https://portal.azure.com)
+	* Create a Table (using Easy Tables) for app data.
+
+## Unity 5 leaderboard demo
+[App Services Demo project](https://github.com/Unity3dAzure/AppServicesDemo) will run inside UnityEditor on Mac or Windows. (The demo project has got everything bundled in and does not require any additional assets to work.)
+Read developer guide on [using Azure App Services to create Unity highscores leaderboard](http://www.deadlyfingers.net/azure/azure-app-services-for-unity3d/) for detailed instructions.
 
 ## Supported Features
 ### MobileServiceClient
@@ -49,7 +51,7 @@ using System.Net;
 using System.Collections.Generic;
 using RestSharp;
 using Pathfinding.Serialization.JsonFx;
-using Unity3dAzure.MobileServices;
+using Unity3dAzure.AppServices;
 
 ```
 
@@ -60,7 +62,7 @@ private MobileServiceTable<TodoItem> _table;
 
 ```
 void Start () {
-	_client = new MobileServiceClient(appUrl, appKey); // <- add your app connection strings here. (NB: Azure App Service does NOT use an AppKey)
+	_client = new MobileServiceClient(appUrl); // <- add your app url here.
 	_table = _client.GetTable<TodoItem>("TodoItem");
 }
 ```
@@ -81,12 +83,12 @@ private void OnReadItemsCompleted(IRestResponse<List<TodoItem>> response) {
 }
 ```
 
+## Dependencies
+The REST service implements [UnityRestClient](https://github.com/ProjectStratus/UnityRestClient) which uses [JsonFx](https://bitbucket.org/TowerOfBricks/jsonfx-for-unity3d-git/) to parse JSON data.
+
 ## Supports
 * iOS
 * Android
 * Windows
-
-## Dependencies
-The REST service implements [UnityRestClient](https://github.com/ProjectStratus/UnityRestClient) which uses [JsonFx](https://bitbucket.org/TowerOfBricks/jsonfx-for-unity3d-git/) to parse JSON data.
 
 Questions or tweet #Azure #GameDev [@deadlyfingers](https://twitter.com/deadlyfingers)

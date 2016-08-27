@@ -2,7 +2,7 @@
 using System.Collections;
 using RestSharp;
 
-namespace Unity3dAzure.MobileServices
+namespace Unity3dAzure.AppServices
 {
     public class ZumoRequest : RestRequest
     {

@@ -1,4 +1,4 @@
-﻿namespace Unity3dAzure.MobileServices
+﻿namespace Unity3dAzure.AppServices
 {
     public enum MobileServiceAuthenticationProvider
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using RestSharp;
 
-namespace Unity3dAzure.MobileServices
+namespace Unity3dAzure.AppServices
 {
     /// <remarks>
     /// NB: Interface uses callbacks as Unity does not support async methods right now. 

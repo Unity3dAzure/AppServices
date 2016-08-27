@@ -3,13 +3,16 @@ using System.Collections;
 using RestSharp;
 using System.Collections.Generic;
 using System;
+using System.Text.RegularExpressions;
+
+
 #if !NETFX_CORE || UNITY_ANDROID
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 #endif
 
-namespace Unity3dAzure.MobileServices
+namespace Unity3dAzure.AppServices
 {
     public class MobileServiceClient : RestClient, IAzureMobileServiceClient
     {
@@ -22,6 +25,7 @@ namespace Unity3dAzure.MobileServices
 
         /// <summary>
         /// Creates a new RestClient using Azure Mobile Service's Application Url and App Key
+        /// NB: Mobile Services should be migrated to use Azure App Service with constructor below.
         /// </summary>
         public MobileServiceClient(string appUrl, string appKey) : base(appUrl)
         {
@@ -31,7 +35,7 @@ namespace Unity3dAzure.MobileServices
             // required for running in Windows and Android
             #if !NETFX_CORE || UNITY_ANDROID
             Debug.Log("ServerCertificateValidation");
-            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;    
+            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
             #endif
         }
 
@@ -40,7 +44,8 @@ namespace Unity3dAzure.MobileServices
     	/// </summary>
     	public MobileServiceClient(string appUrl) : base(appUrl)
     	{
-            AppUrl = appUrl;
+			AppUrl = appUrl;
+			Debug.Log("AppUrl: " + AppUrl);
 
             // required for running in Windows and Android
             #if !NETFX_CORE || UNITY_ANDROID
@@ -48,6 +53,14 @@ namespace Unity3dAzure.MobileServices
             ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
             #endif
         }
+
+		/// <summary>
+		/// Using factory method forces app url to be changed from 'http' to 'https' url
+		/// </summary>
+		public static MobileServiceClient Create(string appUrl)
+		{
+			return new MobileServiceClient (ForceHttps (appUrl));
+		}	
 
         public override string ToString()
         {
@@ -92,6 +105,14 @@ namespace Unity3dAzure.MobileServices
             Debug.Log( "Custom API Request Uri: " + uri );
             this.ExecuteAsync(request, callback);
         }
+
+		/// <summary>
+		/// When you copy the URL is is 'http' by default, but its preferable to use 'https'
+		/// </summary>
+		private static string ForceHttps(string appUrl) 
+		{
+			return Regex.Replace(appUrl, "(?m)http://", "https://");
+		}
 
         /// <summary>
         /// Mobile Service uses an AppKey, but App Service does not.

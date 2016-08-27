@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using RestSharp;
 
-namespace Unity3dAzure.MobileServices
+namespace Unity3dAzure.AppServices
 {
     public interface IAzureMobileServiceClient
     {
