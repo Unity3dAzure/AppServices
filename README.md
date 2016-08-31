@@ -11,7 +11,7 @@ For game developers looking to use Azure App Services (previously Mobile Service
 
 ## Unity 5 leaderboard demo
 [App Services Demo project](https://github.com/Unity3dAzure/AppServicesDemo) will run inside UnityEditor on Mac or Windows. (The demo project has got everything bundled in and does not require any additional assets to work.)
-Read developer guide on [using Azure App Services to create Unity highscores leaderboard](http://www.deadlyfingers.net/azure/azure-app-services-for-unity3d/) for detailed instructions.
+For detailed instructions read my developer blog on how to [use Azure App Services with Unity project](http://www.deadlyfingers.net/azure/azure-app-services-for-unity3d/).
 
 ## Supported Features
 ### MobileServiceClient

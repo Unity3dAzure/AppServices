@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using RestSharp;
+using System;
 
 namespace Unity3dAzure.AppServices
 {
+	[CLSCompliant(false)]
     public class ZumoRequest : RestRequest
     {
         public ZumoRequest(MobileServiceClient client, string uri, Method httpMethod) : base(uri, httpMethod)

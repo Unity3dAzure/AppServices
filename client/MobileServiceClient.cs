@@ -14,6 +14,7 @@ using System.Net.Security;
 
 namespace Unity3dAzure.AppServices
 {
+	[CLSCompliant(false)]
     public class MobileServiceClient : RestClient, IAzureMobileServiceClient
     {
         public string AppUrl { get; private set; }

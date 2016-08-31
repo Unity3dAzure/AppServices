@@ -12,6 +12,7 @@ namespace Unity3dAzure.AppServices
     /// List<T> Read<T>() where T : new();
     /// </example>
     /// </remarks>
+	[CLSCompliant(false)]
     public interface IAzureMobileServiceTable
     {
         /// <summary>

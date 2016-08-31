@@ -9,6 +9,7 @@ using System.Reflection;
 
 namespace Unity3dAzure.AppServices
 {
+	[CLSCompliant(false)]
     public class MobileServiceTable<E> : IAzureMobileServiceTable
     {
         private MobileServiceClient _client;

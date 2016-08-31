@@ -5,6 +5,7 @@ using RestSharp;
 
 namespace Unity3dAzure.AppServices
 {
+	[CLSCompliant(false)]
     public interface IAzureMobileServiceClient
     {
         MobileServiceTable<E> GetTable<E>(string tableName) where E : class;
