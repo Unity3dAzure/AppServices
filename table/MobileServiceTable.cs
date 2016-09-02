@@ -4,9 +4,6 @@ using RestSharp;
 using System.Collections.Generic;
 using System;
 
-using RestSharp.Deserializers;
-using System.Reflection;
-
 namespace Unity3dAzure.AppServices
 {
 	[CLSCompliant(false)]
@@ -56,9 +53,9 @@ namespace Unity3dAzure.AppServices
         public void Update<T>(T item, Action<IRestResponse<T>> callback = null) where T : new()
         {
             // NB: Using Refelection to get 'id' property. Alternatively a DataModel Interface could be used to detect 'id' property
-            if( HasProperty(item, "id") ) 
+            if( Model.HasProperty(item, "id") ) 
             {
-                var x = GetProperty(item, "id"); //item.GetType().GetProperty("id");
+				var x = Model.GetProperty(item, "id"); //item.GetType().GetProperty("id");
                 string id = x.GetValue(item, null) as string;
                 string uri = URI_TABLES + _name + "/" + id;
                 ZumoRequest request = new ZumoRequest(_client, uri, Method.PATCH);
@@ -86,20 +83,6 @@ namespace Unity3dAzure.AppServices
             ZumoRequest request = new ZumoRequest(_client, uri, Method.GET);
             Debug.Log( "Lookup Request Uri: " + uri );
             _client.ExecuteAsync<T>(request, callback);
-        }
-        
-        protected static bool HasProperty(object obj, string propertyName)
-        {
-            return GetProperty(obj, propertyName) != null; // obj.GetType().GetProperty(propertyName) != null;
-        }
-
-        protected static PropertyInfo GetProperty(object obj, string propertyName)
-        {
-            #if NETFX_CORE 
-            return obj.GetType().GetTypeInfo().GetDeclaredProperty(propertyName); // workaround for GetProperty on Windows
-            #else
-            return obj.GetType().GetProperty(propertyName);
-            #endif
         }
 
     }

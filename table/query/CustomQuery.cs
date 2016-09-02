@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using UnityEngine;
 
 namespace Unity3dAzure.AppServices
 {
@@ -41,11 +42,7 @@ namespace Unity3dAzure.AppServices
 
         private string encode(string url)
         {
-            StringBuilder sb = new StringBuilder(url);
-            sb.Replace(" ", "%20"); // NB: replace " " with %20 and not with '+'
-            sb.Replace("'", "%27");
-            sb.Replace(":", "%3A");
-            return sb.ToString();
+			return WWW.EscapeURL(url.Replace("+", "%20")); // NB: replace space with '%20' and not '+'
         }
 
     }
