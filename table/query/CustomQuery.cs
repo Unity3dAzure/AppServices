@@ -1,5 +1,5 @@
 ﻿using System;
-using RestSharp.Contrib;
+using System.Text;
 
 namespace Unity3dAzure.AppServices
 {
@@ -38,12 +38,15 @@ namespace Unity3dAzure.AppServices
 			}
             return queryString;
         }
-        
+
         private string encode(string url)
         {
-			url = url.Replace ("'", "%27"); // replace "'" with '%27'
-			return HttpUtility.UrlPathEncode (url); // replaces " " with '%20' and not '+'
+            StringBuilder sb = new StringBuilder(url);
+            sb.Replace(" ", "%20"); // NB: replace " " with %20 and not with '+'
+            sb.Replace("'", "%27");
+            sb.Replace(":", "%3A");
+            return sb.ToString();
         }
-        
+
     }
 }
