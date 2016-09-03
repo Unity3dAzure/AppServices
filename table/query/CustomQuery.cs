@@ -35,7 +35,7 @@ namespace Unity3dAzure.AppServices
 
 		public CustomQuery(string filter, string orderBy=null, uint top=0, uint skip=0, string select=null, MobileServiceSystemProperty systemProperties=MobileServiceSystemProperty.nil, bool includeDeleted=false)
         {
-			_filter = filter; // return only rows that satisty the specified filter predicate
+			_filter = filter; // return only rows that satisfy the specified filter predicate
 			_orderBy = orderBy; // sort column by one or more columns: order can be specified in 'desc' or 'asc' order ('asc' is default)
 			_top = top; // return the top n entities for any query
 			_skip = skip; // the n of records to skip (used for paging results)
@@ -104,7 +104,7 @@ namespace Unity3dAzure.AppServices
 			if (systemProperties == MobileServiceSystemProperty.nil) {
 				return "";
 			}
-			return systemProperties.ToString().Replace(", ","%2C"); // remove spaces from string and escape comma
+			return systemProperties.ToString().Replace(" ",""); // remove spaces from string
 		}
     }
 }
