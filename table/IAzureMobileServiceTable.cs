@@ -41,6 +41,11 @@ namespace Unity3dAzure.AppServices
         /// https://msdn.microsoft.com/en-us/library/azure/jj677199.aspx
         /// </summary>
         void Query<T>(CustomQuery query, Action<IRestResponse<List<T>>> callback = null) where T : new();
+
+		/// <summary>
+		/// Returns a 'count' and nested list of 'results' (appends `$inlinecount=allpages` parameter to the query)
+		/// </summary>
+		void Query<T>(CustomQuery query, Action<IRestResponse<T>> callback = null) where T : INestedResults, new();
         
         /// <summary>
         /// Get an item's data using id property. 

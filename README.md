@@ -9,9 +9,9 @@ For game developers looking to use Azure App Services (previously Mobile Service
 3. Create an Azure App Service [Mobile App](https://portal.azure.com)
 	* Create a Table (using Easy Tables) for app data.
 
-## Unity 5 leaderboard demo
-[App Services Demo project](https://github.com/Unity3dAzure/AppServicesDemo) will run inside UnityEditor on Mac or Windows. (The demo project has got everything bundled in and does not require any additional assets to work.)
-For detailed instructions read my developer blog on how to [use Azure App Services with Unity project](http://www.deadlyfingers.net/azure/azure-app-services-for-unity3d/).
+## Azure App Services Demos for Unity 5
+Try the [Azure App Services Demos](https://github.com/Unity3dAzure/AppServicesDemo) project for Unity 5 on Mac / Windows. (The demo project has got everything already bundled in and does not require any additional assets to work. Just wire it up with your [Azure App Service](https://portal.azure.com) and run it right inside the Unity Editor.)
+For detailed instructions read my developer blog on [how to setup Azure App Services and Unity demo project](http://www.deadlyfingers.net/azure/azure-app-services-for-unity3d/).
 
 ## Supported Features
 ### MobileServiceClient
@@ -40,8 +40,8 @@ Lookup | Get an item’s data using id property.
 	void Update<T>(T item, Action<IRestResponse<T>> callback = null) where T : new();
 	void Delete<T>(string id, Action<IRestResponse<T>> callback = null) where T : new();
 	void Query<T>(CustomQuery query, Action<IRestResponse<List<T>>> callback = null) where T : new();
+  void Query<T>(CustomQuery query, Action<IRestResponse<T>> callback = null) where T : INestedResults, new();
 	void Lookup<T>(string id, Action<IRestResponse<T>> callback = null) where T : new();
-
 
 ## Sample usage
 ```

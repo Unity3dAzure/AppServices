@@ -1,6 +1,6 @@
 ﻿namespace Unity3dAzure.AppServices
 {
-    public interface IAzureDataModel
+    public interface IDataModel
     {
         string GetId();
     }
