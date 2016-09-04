@@ -6,9 +6,9 @@ namespace Unity3dAzure.AppServices
 {
 	[Serializable]
 	[CLSCompliant(false)]
-	public abstract class DataModel : IDataModel
+	public class DataModel : IDataModel
     {
-		public string id { get; internal set; }
+		public string id { get; set; }
 
 		// system properties
 		[JsonIgnore] public DateTime createdAt { get; private set; }
@@ -28,11 +28,6 @@ namespace Unity3dAzure.AppServices
         {
             return id;
         }
-
-		public void SetId(string id)
-		{
-			this.id = id;
-		}
 
 		public override string ToString ()
 		{

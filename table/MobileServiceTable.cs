@@ -63,21 +63,32 @@ namespace Unity3dAzure.AppServices
         
         public void Update<T>(T item, Action<IRestResponse<T>> callback = null) where T : new()
         {
-            // NB: Using Refelection to get 'id' property. Alternatively a DataModel Interface could be used to detect 'id' property
-            if( Model.HasProperty(item, "id") ) 
+            string id = null;
+            // Check if model uses the 'IDataModel' Interface to get id property, otherwise try Refelection (using 'Model' helper).
+            IDataModel model = item as IDataModel;
+            if (model != null)
             {
-				var x = Model.GetProperty(item, "id"); //item.GetType().GetProperty("id");
-                string id = x.GetValue(item, null) as string;
-                string uri = URI_TABLES + _name + "/" + id;
-                ZumoRequest request = new ZumoRequest(_client, uri, Method.PATCH);
-                Debug.Log( "Update Request Uri: " + uri );
-                request.AddBody(item);
-                _client.ExecuteAsync<T>(request, callback);
+                id = model.GetId();
+            }
+            else if ( Model.HasProperty(item, "id") ) 
+            {
+				var x = Model.GetProperty(item, "id");
+                id = x.GetValue(item, null) as string;
             }
             else
             {
-                Debug.LogError("Unable to get 'id' property");
+                Debug.LogError("Unable to get 'id' data model property");
             }
+            if (string.IsNullOrEmpty(id))
+            {
+                Debug.LogError("Error 'id' value is missing");
+                return;
+            }
+            string uri = URI_TABLES + _name + "/" + id;
+            ZumoRequest request = new ZumoRequest(_client, uri, Method.PATCH);
+            Debug.Log("Update Request Uri: " + uri);
+            request.AddBody(item);
+            _client.ExecuteAsync<T>(request, callback);
         }
         
         public void Delete<T>(string id, Action<IRestResponse<T>> callback = null) where T : new()
