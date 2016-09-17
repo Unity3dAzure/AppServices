@@ -40,7 +40,7 @@ Lookup | Get an item’s data using id property.
 	void Update<T>(T item, Action<IRestResponse<T>> callback = null) where T : new();
 	void Delete<T>(string id, Action<IRestResponse<T>> callback = null) where T : new();
 	void Query<T>(CustomQuery query, Action<IRestResponse<List<T>>> callback = null) where T : new();
-  void Query<T>(CustomQuery query, Action<IRestResponse<T>> callback = null) where T : INestedResults, new();
+	void Query<T>(CustomQuery query, Action<IRestResponse<T>> callback = null) where T : INestedResults, new();
 	void Lookup<T>(string id, Action<IRestResponse<T>> callback = null) where T : new();
 
 ## Sample usage
