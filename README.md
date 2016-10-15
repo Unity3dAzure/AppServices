@@ -18,7 +18,7 @@ For detailed instructions read my developer blog on [how to setup Azure App Serv
 API | Description
 --- | -----------
 Login | Client-directed login using access token.
-InvokeApi | Get custom API
+InvokeApi | Invoke custom API (Easy API) using GET, POST, PUT, PATCH or DELETE
 
 ### MobileServiceTable
 API | Description

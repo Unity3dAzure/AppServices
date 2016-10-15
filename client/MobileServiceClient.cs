@@ -97,15 +97,35 @@ namespace Unity3dAzure.AppServices
         //*/
 
         /// <summary>
-        /// TODO: Implement custom API (using GET request)
+        /// GET custom API
         /// </summary>
         public void InvokeApi<T>(string apiName, Action<IRestResponse<T>> callback = null) where T : new()
         {
-            string uri = URI_API + apiName;
-            ZumoRequest request = new ZumoRequest(this, uri, Method.GET);
-            Debug.Log( "Custom API Request Uri: " + uri );
-            this.ExecuteAsync(request, callback);
+			InvokeApi<T> (apiName, Method.GET, callback);
         }
+
+		/// <summary>
+		/// Invokes custom API for HTTP Methods: GET, POST, PUT, PATCH, DELETE
+		/// </summary>
+		public void InvokeApi<T>(string apiName, Method httpMethod, Action<IRestResponse<T>> callback = null) where T : new()
+		{
+			string uri = URI_API + apiName;
+			ZumoRequest request = new ZumoRequest(this, uri, httpMethod);
+			Debug.Log( httpMethod.ToString() + " custom API Request Uri: " + uri );
+			this.ExecuteAsync(request, callback);
+		}
+
+		/// <summary>
+		/// Invokes custom API with body
+		/// </summary>
+		public void InvokeApi<T>(string apiName, Method httpMethod, T body, Action<IRestResponse<T>> callback = null) where T : new()
+		{
+			string uri = URI_API + apiName;
+			ZumoRequest request = new ZumoRequest(this, uri, httpMethod);
+			request.AddBody (body);
+			Debug.Log( httpMethod.ToString() + " custom API Request Uri: " + uri );
+			this.ExecuteAsync(request, callback);
+		}
 
 		/// <summary>
 		/// When you copy the URL is is 'http' by default, but its preferable to use 'https'

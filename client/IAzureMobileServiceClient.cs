@@ -22,8 +22,18 @@ namespace Unity3dAzure.AppServices
         //void Login(MobileServiceAuthenticationProvider provider);
         
         /// <summary>
-        /// TODO: Custom API
+        /// Invokes a custom API using GET HTTP method
         /// </summary>
         void InvokeApi<T>(string apiName, Action<IRestResponse<T>> callback = null) where T : new();
+
+		/// <summary>
+		/// Invokes a custom API for HTTP Methods: GET, POST, PUT, PATCH, DELETE
+		/// </summary>
+		void InvokeApi<T>(string apiName, Method httpMethod, Action<IRestResponse<T>> callback = null) where T : new();
+
+		/// <summary>
+		/// Invokes a custom API with body object
+		/// </summary>
+		void InvokeApi<T> (string apiName, Method httpMethod, T body, Action<IRestResponse<T>> callback = null) where T : new();
     }
 }
