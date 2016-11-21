@@ -1,7 +1,10 @@
-﻿namespace Unity3dAzure.AppServices
+﻿using System;
+
+namespace Unity3dAzure.AppServices
 {
+	[Serializable]
     public class User
     {
-        public string userId { get; set; }
+		public string userId;
     }
 }

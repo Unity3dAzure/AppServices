@@ -1,13 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
-using RestSharp;
-using System.Collections.Generic;
 using System;
 
 namespace Unity3dAzure.AppServices
 {
-	[CLSCompliant(false)]
-    public class MobileServiceTable<E> : IAzureMobileServiceTable
+	public class MobileServiceTable<E> : IAzureMobileServiceTable
     {
         private MobileServiceClient _client;
         private string _name;
@@ -25,43 +22,46 @@ namespace Unity3dAzure.AppServices
             return _name;
         }
         
-        public void Insert<T>(T item, Action<IRestResponse<T>> callback = null) where T : new()
+		public IEnumerator Insert<T>(T item, Action<IRestResponse<T>> callback = null) where T : new()
         {
-            string uri = URI_TABLES + _name;
-            ZumoRequest request = new ZumoRequest(_client, uri, Method.POST);
-            Debug.Log( "Insert Request: " + uri );
+			string url = string.Format("{0}/{1}{2}", _client.AppUrl, URI_TABLES, _name);
+			ZumoRequest request = new ZumoRequest(_client, url, Method.POST);
+			Debug.Log( "Insert Request: " + url );
             request.AddBody(item);
-            _client.ExecuteAsync<T>(request, callback);
-        }
-        
-        public void Read<T>(Action<IRestResponse<List<T>>> callback = null) where T : new()
-        {
-            string uri = URI_TABLES + _name;
-            ZumoRequest request = new ZumoRequest(_client, uri, Method.GET);
-            Debug.Log( "Read Request: " + uri );
-            _client.ExecuteAsync<List<T>>(request, callback);
-        }
-        
-        public void Query<T>(CustomQuery query, Action<IRestResponse<List<T>>> callback = null) where T : new()
-        {
-            string uri = string.Format("{0}{1}{2}", URI_TABLES, _name, query);
-            ZumoRequest request = new ZumoRequest(_client, uri, Method.GET);
-			Debug.Log( "Query Request: " + uri +" Query:"+ query );
-			_client.ExecuteAsync<List<T>> (request, callback);
+			yield return request.request.Send();
+			request.ParseData<T>(callback);
         }
 
-		public void Query<T>(CustomQuery query, Action<IRestResponse<T>> callback = null) where T : INestedResults, new()
-		{
-			string queryResults = query.ToString ();
-			string q = queryResults.Length > 0 ? "&" : "?";
-			queryResults += string.Format("{0}$inlinecount=allpages", q);
-			string uri = string.Format("{0}{1}{2}", URI_TABLES, _name, queryResults);
-			ZumoRequest request = new ZumoRequest(_client, uri, Method.GET);
-			Debug.Log( "Query Request: " + uri +" Query with inlinecount:"+ queryResults );
-			_client.ExecuteAsync<T> (request, callback);
+		public IEnumerator Read<T>(Action<IRestResponse<T[]>> callback = null) where T : new() {
+			string url = string.Format("{0}/{1}{2}", _client.AppUrl, URI_TABLES, _name);
+			ZumoRequest request = new ZumoRequest(_client, url, Method.GET);
+			Debug.Log( "Read Request: " + url );
+			yield return request.request.Send();
+			request.ParseDataArray<T>(callback);
 		}
         
-        public void Update<T>(T item, Action<IRestResponse<T>> callback = null) where T : new()
+		public IEnumerator Query<T>(CustomQuery query, Action<IRestResponse<T[]>> callback = null) where T : new()
+        {
+			string url = string.Format("{0}/{1}{2}{3}", _client.AppUrl, URI_TABLES, _name, query);
+            ZumoRequest request = new ZumoRequest(_client, url, Method.GET);
+			Debug.Log( "Query Request: " + url +" Query:"+ query );
+			yield return request.request.Send();
+			request.ParseDataArray<T> (callback);
+        }
+
+		public IEnumerator Query<T>(CustomQuery query, Action<IRestResponse<T>> callback = null) where T : INestedResults, new()
+		{
+			string queryString = query.ToString ();
+			string q = queryString.Length > 0 ? "&" : "?";
+			queryString += string.Format("{0}$inlinecount=allpages", q);
+			string url = string.Format("{0}/{1}{2}{3}", _client.AppUrl, URI_TABLES, _name, queryString);
+			Debug.Log( "Query Request: " + url +" Paginated Query:"+ query );
+			ZumoRequest request = new ZumoRequest(_client, url, Method.GET);
+			yield return request.request.Send();
+			request.ParseData<T>(callback);
+		}
+        
+		public IEnumerator Update<T>(T item, Action<IRestResponse<T>> callback = null) where T : new()
         {
             string id = null;
             // Check if model uses the 'IDataModel' Interface to get id property, otherwise try Refelection (using 'Model' helper).
@@ -70,10 +70,10 @@ namespace Unity3dAzure.AppServices
             {
                 id = model.GetId();
             }
-            else if ( Model.HasProperty(item, "id") ) 
+			else if ( Model.HasField(item, "id") ) 
             {
-				var x = Model.GetProperty(item, "id");
-                id = x.GetValue(item, null) as string;
+				var x = Model.GetField(item, "id");
+                id = x.GetValue(item) as string;
             }
             else
             {
@@ -82,29 +82,32 @@ namespace Unity3dAzure.AppServices
             if (string.IsNullOrEmpty(id))
             {
                 Debug.LogError("Error 'id' value is missing");
-                return;
+				yield return null;
             }
-            string uri = URI_TABLES + _name + "/" + id;
-            ZumoRequest request = new ZumoRequest(_client, uri, Method.PATCH);
-            Debug.Log("Update Request Uri: " + uri);
+			string url = string.Format("{0}/{1}{2}/{3}", _client.AppUrl, URI_TABLES, _name, id);
+			ZumoRequest request = new ZumoRequest(_client, url, Method.PATCH);
             request.AddBody(item);
-            _client.ExecuteAsync<T>(request, callback);
+			Debug.Log("Update Request Url: " + url + " patch:" + item);
+			yield return request.request.Send();
+			request.ParseData<T>(callback);
         }
         
-        public void Delete<T>(string id, Action<IRestResponse<T>> callback = null) where T : new()
+		public IEnumerator Delete<T>(string id, Action<IRestResponse<T>> callback = null) where T : new()
         {
-            string uri = URI_TABLES + _name + "/" + id;
-            ZumoRequest request = new ZumoRequest(_client, uri, Method.DELETE);
-            Debug.Log( "Delete Request Uri: " + uri );
-            _client.ExecuteAsync<T>(request, callback);
+			string url = string.Format("{0}/{1}{2}/{3}", _client.AppUrl, URI_TABLES, _name, id);
+            ZumoRequest request = new ZumoRequest(_client, url, Method.DELETE);
+            Debug.Log( "Delete Request Url: " + url );
+			yield return request.request.Send();
+			request.ParseData<T>(callback);
         }
         
-        public void Lookup<T>(string id, Action<IRestResponse<T>> callback = null) where T : new()
+		public IEnumerator Lookup<T>(string id, Action<IRestResponse<T>> callback = null) where T : new()
         {
-            string uri = URI_TABLES + _name + "/" + id;
-            ZumoRequest request = new ZumoRequest(_client, uri, Method.GET);
-            Debug.Log( "Lookup Request Uri: " + uri );
-            _client.ExecuteAsync<T>(request, callback);
+			string url = string.Format("{0}/{1}{2}/{3}", _client.AppUrl, URI_TABLES, _name, id);
+            ZumoRequest request = new ZumoRequest(_client, url, Method.GET);
+            Debug.Log( "Lookup Request Url: " + url );
+			yield return request.request.Send();
+			request.ParseData<T>(callback);
         }
 
     }

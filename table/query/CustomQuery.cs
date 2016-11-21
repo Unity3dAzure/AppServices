@@ -20,7 +20,6 @@ namespace Unity3dAzure.AppServices
 		deleted = 0x8
 	}
 
-	[CLSCompliant (false)]
 	public class CustomQuery
 	{
 		// query option parameters defined by the Open Data Protocol (OData)
