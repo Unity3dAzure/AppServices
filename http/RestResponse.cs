@@ -5,88 +5,79 @@ namespace Unity3dAzure.AppServices
 {
 	public abstract class Response
 	{
-		private bool isError;
-		public bool IsError { 
-			get { 
-				return this.isError;
-			}
-		}
+		public bool IsError { get; internal set; }
 
-		private string errorMessage;
-		public string ErrorMessage { 
-			get { 
-				return this.errorMessage;
-			}
-		}
+		public string ErrorMessage { get; internal set; }
 
-		private string url;
-		public string Url { 
-			get { 
-				return this.url;
-			}
-		}
+		public string Url { get; internal set; }
 
-		private HttpStatusCode statusCode;
-		public HttpStatusCode StatusCode { 
-			get { 
-				return this.statusCode;
-			}
-		}
+		public HttpStatusCode StatusCode { get; internal set; }
 
-		private string content;
-		public string Content { 
-			get { 
-				return this.content;
-			}
+		public string Content { get; internal set; }
+
+		protected Response (HttpStatusCode statusCode)
+		{
+			this.StatusCode = statusCode;
+			this.IsError = !((int)statusCode >= 200 && (int)statusCode < 300);
 		}
 
 		// success
-		protected Response (string url, HttpStatusCode statusCode, string text)
+		protected Response (HttpStatusCode statusCode, string url, string text)
 		{
-			this.isError = false;
-			this.url = url;
-			this.errorMessage = null;
-			this.statusCode = statusCode;
-			this.content = text;
+			this.IsError = false;
+			this.Url = url;
+			this.ErrorMessage = null;
+			this.StatusCode = statusCode;
+			this.Content = text;
 		}
 
 		// failure
-		protected Response (string error, string url, HttpStatusCode statusCode, string text)
+		protected Response (string error, HttpStatusCode statusCode, string url, string text)
 		{
-			this.isError = true;
-			this.url = url;
-			this.errorMessage = error;
-			this.statusCode = statusCode;
-			this.content = text;
+			this.IsError = true;
+			this.Url = url;
+			this.ErrorMessage = error;
+			this.StatusCode = statusCode;
+			this.Content = text;
 		}
 	}
 
 	public sealed class RestResponse : Response
 	{
 		// success
-		public RestResponse (string url, HttpStatusCode statusCode, string text) : base(url, statusCode, text){}
+		public RestResponse (HttpStatusCode statusCode, string url, string text) : base (statusCode, url, text)
+		{
+		}
 
 		// failure
-		public RestResponse (string error, string url, HttpStatusCode statusCode, string text) : base(error, url, statusCode, text){}
+		public RestResponse (string error, HttpStatusCode statusCode, string url, string text) : base (error, statusCode, url, text)
+		{
+		}
 	}
 
 	public sealed class RestResponse<T> : Response, IRestResponse<T>
 	{
-		private T data;
-		public T Data {
-			get {
-				return this.data;
-			}
-		}
+		public T Data { get; internal set; }
 
 		// success
-		public RestResponse (string url, HttpStatusCode statusCode, string text, T data) : base(url, statusCode, text) 
+		public RestResponse (HttpStatusCode statusCode, string url, string text, T data) : base (statusCode, url, text)
 		{
-			this.data = data;
+			this.Data = data;
 		}
 
 		// failure
-		public RestResponse (string error, string url, HttpStatusCode statusCode, string text) : base(error, url, statusCode, text) 
+		public RestResponse (string error, HttpStatusCode statusCode, string url, string text) : base (error, statusCode, url, text)
+		{
+		}
+	}
+
+	internal sealed class RestResult<T> : Response
+	{
+		public T AnObject { get; internal set; }
+
+		public T[] AnArrayOfObjects { get; internal set; }
+
+		public RestResult (HttpStatusCode statusCode) : base (statusCode)
 		{
 		}
 	}

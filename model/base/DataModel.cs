@@ -5,13 +5,17 @@ namespace Unity3dAzure.AppServices
 {
 	[Serializable]
 	public class DataModel : IDataModel
-    {
+	{
 		[SerializeField] 
 		public string id;
-		public string GetId() {
+
+		public string GetId ()
+		{
 			return id;
 		}
-		public void SetId(string id) {
+
+		public void SetId (string id)
+		{
 			this.id = id;
 		}
 
@@ -19,9 +23,11 @@ namespace Unity3dAzure.AppServices
 		[SerializeField] 
 		private string createdAt;
 		private DateTime? _createdAt;
-		public DateTime? CreatedAt() {
+
+		public DateTime? CreatedAt ()
+		{
 			if (_createdAt == null) {
-				_createdAt = Convert.ToDateTime(createdAt);
+				_createdAt = Convert.ToDateTime (createdAt);
 			}
 			return _createdAt;
 		}
@@ -29,32 +35,37 @@ namespace Unity3dAzure.AppServices
 		[SerializeField] 
 		private string updatedAt;
 		private DateTime? _updatedAt;
-		public DateTime? UpdatedAt() {
+
+		public DateTime? UpdatedAt ()
+		{
 			if (_updatedAt == null) {
-				_updatedAt = Convert.ToDateTime(updatedAt);
+				_updatedAt = Convert.ToDateTime (updatedAt);
 			}
 			return _updatedAt;
 		}
 
 		[SerializeField] 
 		private string version;
-		public string Version()
+
+		public string Version ()
 		{
 			return version;
 		}
 
 		[SerializeField] 
 		private bool deleted;
-		public bool Deleted()
+
+		public bool Deleted ()
 		{
 			return deleted;
 		}
 
 		[SerializeField]
 		private string ROW_NUMBER;
-		public uint RowNumber()
+
+		public uint RowNumber ()
 		{
-			return Convert.ToUInt32(ROW_NUMBER, 10);
+			return Convert.ToUInt32 (ROW_NUMBER, 10);
 		}
 
 		public override string ToString ()
@@ -62,9 +73,9 @@ namespace Unity3dAzure.AppServices
 			return JsonUtility.ToJson (this);
 		}
 
-		public string ToJSON()
+		public string ToJSON ()
 		{
 			return JsonHelper.ToJsonExcludingSystemProperties (this);
 		}
-    }
+	}
 }

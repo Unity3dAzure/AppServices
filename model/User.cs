@@ -3,8 +3,8 @@
 namespace Unity3dAzure.AppServices
 {
 	[Serializable]
-    public class User
-    {
+	public class User
+	{
 		public string userId;
-    }
+	}
 }

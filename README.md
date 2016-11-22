@@ -1,16 +1,17 @@
 # Azure App Services for Unity3d
-For game developers looking to use Azure App Services (previously Mobile Services) in their Unity project.
+For game developers looking to use Azure App Services (previously Mobile Services) in their Unity project. This App Services REST API library for Unity is quite similar in structure to the Azure Mobile Services SDK so if you've used that before you should feel relatively at home.
+
+## Prerequisites
+Requires Unity v5.3 or greater as [UnityWebRequest](https://docs.unity3d.com/Manual/UnityWebRequest.html) and [JsonUtil](https://docs.unity3d.com/ScriptReference/JsonUtility.html) features are used. Unity will be extending platform support for UnityWebRequest so keep Unity up to date if you need to support these additional platforms.
 
 ## How to setup App Services with a new Unity project
-1. [Download UnityRestClient](https://github.com/ProjectStratus/UnityRestClient/archive/master.zip)
- 	* Copy JsonFx 'plugins' and the UnityRestClient 'Source' into project `Assets` folder
-2. [Download AppServices](https://github.com/Unity3dAzure/AppServices/archive/master.zip)  
+1. [Download AppServices](https://github.com/Unity3dAzure/AppServices/archive/master.zip)  
 	* Copy 'AppServices' into project `Assets` folder.
-3. Create an Azure App Service [Mobile App](https://portal.azure.com)
+2. Create an Azure App Service [Mobile App](https://portal.azure.com)
 	* Create a Table (using Easy Tables) for app data.
 
 ## Azure App Services Demos for Unity 5
-Try the [Azure App Services Demos](https://github.com/Unity3dAzure/AppServicesDemo) project for Unity 5 on Mac / Windows. (The demo project has got everything already bundled in and does not require any additional assets to work. Just wire it up with your [Azure App Service](https://portal.azure.com) and run it right inside the Unity Editor.)
+Try the [Azure App Services Demos](https://github.com/Unity3dAzure/AppServicesDemo) project for Unity v5.4.x on Mac / Windows. (The demo project has got everything already bundled in and does not require any additional assets to work. Just wire it up with your [Azure App Service](https://portal.azure.com) and run it right inside the Unity Editor.)
 For detailed instructions read my developer blog on [how to setup Azure App Services and Unity demo project](http://www.deadlyfingers.net/azure/azure-app-services-for-unity3d/).
 
 ## Supported Features
@@ -30,18 +31,20 @@ Delete | Delete an item using id property.
 Query | Get a list of results using a custom query.
 Lookup | Get an item’s data using id property.
 
-### MobileServiceClient Interface
-	void Login(MobileServiceAuthenticationProvider provider, string token, Action<IRestResponse<MobileServiceUser>> callback = null);
-	void InvokeApi<T>(string apiName, Action<IRestResponse<T>> callback = null) where T : new();
+### [MobileServiceClient Interface](https://github.com/Unity3dAzure/AppServices/blob/master/client/IAzureMobileServiceClient.cs)
+	Login(MobileServiceAuthenticationProvider provider, string token,	Action<IRestResponse<MobileServiceUser>> callback = null);
+	InvokeApi<T>(string apiName, Action<IRestResponse<T>> callback = null) where T : new();
+	InvokeApi<T>(string apiName, Method httpMethod, Action<IRestResponse<T>> callback = null) where T : new();
+	InvokeApi<T>(string apiName, Method httpMethod, T body, Action<IRestResponse<T>> callback = null) where T : new();
 
-### MobileServiceTable Interface
-	void Insert<T>(T item, Action<IRestResponse<T>> callback = null) where T : new();
-	void Read<T>(Action<IRestResponse<List<T>>> callback = null) where T : new();
-	void Update<T>(T item, Action<IRestResponse<T>> callback = null) where T : new();
-	void Delete<T>(string id, Action<IRestResponse<T>> callback = null) where T : new();
-	void Query<T>(CustomQuery query, Action<IRestResponse<List<T>>> callback = null) where T : new();
-	void Query<T>(CustomQuery query, Action<IRestResponse<T>> callback = null) where T : INestedResults, new();
-	void Lookup<T>(string id, Action<IRestResponse<T>> callback = null) where T : new();
+### [MobileServiceTable Interface](https://github.com/Unity3dAzure/AppServices/blob/master/table/IAzureMobileServiceTable.cs)
+	Insert<T>(T item, Action<IRestResponse<T>> callback = null) where T : new();
+	Read<T>(Action<IRestResponse<T[]>> callback = null) where T : new();
+	Update<T>(T item, Action<IRestResponse<T>> callback = null) where T : new();
+	Delete<T>(string id, Action<IRestResponse<T>> callback = null) where T : new();
+	Query<T>(CustomQuery query, Action<IRestResponse<T[]>> callback = null) where T : new();
+	Query<T>(CustomQuery query, Action<IRestResponse<T>> callback = null) where T : INestedResults, new();
+	Lookup<T>(string id, Action<IRestResponse<T>> callback = null) where T : new();
 
 ## Sample usage
 ```
@@ -49,8 +52,6 @@ using UnityEngine;
 using System;
 using System.Net;
 using System.Collections.Generic;
-using RestSharp;
-using Pathfinding.Serialization.JsonFx;
 using Unity3dAzure.AppServices;
 
 ```
@@ -68,27 +69,29 @@ void Start () {
 ```
 ```
 private void ReadItems() {
-	_table.Read<TodoItem>(OnReadItemsCompleted);
+	StartCoroutine( _table.Read<TodoItem>(OnReadItemsCompleted) );
 }
 
-private void OnReadItemsCompleted(IRestResponse<List<TodoItem>> response) {
-	if ( response.StatusCode == HttpStatusCode.OK) {
-		Debug.Log("OnReadItemsCompleted data: " + response.Content);
-		List<TodoItem> items = response.Data;
-		Debug.Log( "Todo items count: " + items.Count);
+private void OnReadItemsCompleted(IRestResponse<TodoItem[]> response) {
+	if (!response.IsError) {
+		Debug.Log ("OnReadCompleted: " + response.Url + " data: " + response.Content);
+		TodoItem[] items = response.Data;
+		Debug.Log ( "Todo items count: " + items.Count);
 	} else {
-		ResponseError err = JsonReader.Deserialize<ResponseError>(response.Content);
-		Debug.Log("Error " + err.code.ToString() + " " + err.error + " Uri: " + response.ResponseUri);
+		Debug.LogWarning ("Read Error Status:" + response.StatusCode + " Url: " + response.Url);
 	}
 }
 ```
 
-## Dependencies
-The REST service implements [UnityRestClient](https://github.com/ProjectStratus/UnityRestClient) which uses [JsonFx](https://bitbucket.org/TowerOfBricks/jsonfx-for-unity3d-git/) to parse JSON data.
-
-## Supports
+## Supported platforms
+Will work on all the platforms [UnityWebRequest](https://docs.unity3d.com/Manual/UnityWebRequest.html) supports including:
+* Unity Editor and Standalone players
 * iOS
 * Android
 * Windows
+
+## Known issues
+There is an issue with using [Patch on Android using UnityWebRequest with App Services](http://answers.unity3d.com/questions/1230067/trying-to-use-patch-on-a-unitywebrequest-on-androi.html).
+* Android won't recognize the "PATCH" http method currently required to update an item in App Services. [Dimitris-Ilias Gkanatsios](https://twitter.com/dgkanatsios) who wrote an [AzureServicesForUnity](https://github.com/dgkanatsios/AzureServicesForUnity) library has documented a possible [workaround for using PATCH on Android](http://stackoverflow.com/questions/39023937/trying-to-use-patch-on-a-unitywebrequest-on-android-and-getting-unsupported-pro) using Easy APIs.
 
 Questions or tweet #Azure #GameDev [@deadlyfingers](https://twitter.com/deadlyfingers)
