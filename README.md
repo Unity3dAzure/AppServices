@@ -2,7 +2,7 @@
 For game developers looking to use Azure App Services (previously Mobile Services) in their Unity project. This App Services REST API library for Unity is quite similar in structure to the Azure Mobile Services SDK so if you've used that before you should feel relatively at home.
 
 ## Prerequisites
-Requires Unity v5.3 or greater as [UnityWebRequest](https://docs.unity3d.com/Manual/UnityWebRequest.html) and [JsonUtil](https://docs.unity3d.com/ScriptReference/JsonUtility.html) features are used. Unity will be extending platform support for UnityWebRequest so keep Unity up to date if you need to support these additional platforms.
+Requires Unity v5.3 or greater as [UnityWebRequest](https://docs.unity3d.com/Manual/UnityWebRequest.html) and [JsonUtility](https://docs.unity3d.com/ScriptReference/JsonUtility.html) features are used. Unity will be extending platform support for UnityWebRequest so keep Unity up to date if you need to support these additional platforms.
 
 ## How to setup App Services with a new Unity project
 1. [Download AppServices](https://github.com/Unity3dAzure/AppServices/archive/master.zip)  
@@ -83,15 +83,26 @@ private void OnReadItemsCompleted(IRestResponse<TodoItem[]> response) {
 }
 ```
 
+## Known issues
+* There is an issue with [PATCH on Android using UnityWebRequest with Azure App Services](http://answers.unity3d.com/questions/1230067/trying-to-use-patch-on-a-unitywebrequest-on-androi.html). Android won't recognize the "PATCH" http method currently required to update an item in App Services. One workaround is to enable the `X-HTTP-Method-Override` header. Here's the quick fix for App Services running node backend:
+  1. Install the "method-override" package.  
+  ```
+npm install method-override --save
+  ```
+  2. In 'app.js' file insert:  
+  ```
+var methodOverride = require('method-override');  
+// after the line "var app = express();" add  
+app.use(methodOverride('X-HTTP-Method-Override'));
+  ```
+
+This will enable PATCH requests to be sent on Android.
+
 ## Supported platforms
 Will work on all the platforms [UnityWebRequest](https://docs.unity3d.com/Manual/UnityWebRequest.html) supports including:
 * Unity Editor and Standalone players
 * iOS
 * Android
 * Windows
-
-## Known issues
-There is an issue with using [Patch on Android using UnityWebRequest with App Services](http://answers.unity3d.com/questions/1230067/trying-to-use-patch-on-a-unitywebrequest-on-androi.html).
-* Android won't recognize the "PATCH" http method currently required to update an item in App Services. [Dimitris-Ilias Gkanatsios](https://twitter.com/dgkanatsios) who wrote an [AzureServicesForUnity](https://github.com/dgkanatsios/AzureServicesForUnity) library has documented a possible [workaround for using PATCH on Android](http://stackoverflow.com/questions/39023937/trying-to-use-patch-on-a-unitywebrequest-on-android-and-getting-unsupported-pro) using Easy APIs.
 
 Questions or tweet #Azure #GameDev [@deadlyfingers](https://twitter.com/deadlyfingers)

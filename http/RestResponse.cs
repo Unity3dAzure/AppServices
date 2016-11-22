@@ -5,15 +5,15 @@ namespace Unity3dAzure.AppServices
 {
 	public abstract class Response
 	{
-		public bool IsError { get; internal set; }
+		public bool IsError { get; set; }
 
-		public string ErrorMessage { get; internal set; }
+		public string ErrorMessage { get; set; }
 
-		public string Url { get; internal set; }
+		public string Url { get; set; }
 
-		public HttpStatusCode StatusCode { get; internal set; }
+		public HttpStatusCode StatusCode { get; set; }
 
-		public string Content { get; internal set; }
+		public string Content { get; set; }
 
 		protected Response (HttpStatusCode statusCode)
 		{
@@ -57,7 +57,7 @@ namespace Unity3dAzure.AppServices
 
 	public sealed class RestResponse<T> : Response, IRestResponse<T>
 	{
-		public T Data { get; internal set; }
+		public T Data { get; set; }
 
 		// success
 		public RestResponse (HttpStatusCode statusCode, string url, string text, T data) : base (statusCode, url, text)
@@ -73,9 +73,9 @@ namespace Unity3dAzure.AppServices
 
 	internal sealed class RestResult<T> : Response
 	{
-		public T AnObject { get; internal set; }
+		public T AnObject { get; set; }
 
-		public T[] AnArrayOfObjects { get; internal set; }
+		public T[] AnArrayOfObjects { get; set; }
 
 		public RestResult (HttpStatusCode statusCode) : base (statusCode)
 		{
