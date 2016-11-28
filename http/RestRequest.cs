@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.Networking;
 using System;
 using System.Net;
 
 namespace Unity3dAzure.AppServices
 {
-	public abstract class RestRequest
+	public abstract class RestRequest : IDisposable
 	{
 		public UnityWebRequest request { get; private set; }
 
@@ -40,49 +39,68 @@ namespace Unity3dAzure.AppServices
 
 		#region Response and json object parsing
 
+        private RestResult<T> GetRestResult<T>()
+        {
+            HttpStatusCode statusCode = (HttpStatusCode)Enum.Parse(typeof(HttpStatusCode), request.responseCode.ToString());
+            RestResult<T> result = new RestResult<T>(statusCode);
+
+            if (result.IsError)
+            {
+                result.ErrorMessage = "Response failed with status: " + statusCode.ToString();
+                return result;
+            }
+
+            if (string.IsNullOrEmpty(request.downloadHandler.text))
+            {
+                result.IsError = true;
+                result.ErrorMessage = "Response has empty body";
+                return result;
+            }
+
+            return result;
+        }
+
 		/// <summary>
 		/// Shared method to return response result whether an object or array of objects
 		/// </summary>
-		private RestResult<T> ParseResultAsAnArray<T> (bool isArray)
+		private RestResult<T> TryParseJsonArray<T> ()
 		{
-			HttpStatusCode statusCode = (HttpStatusCode)Enum.Parse (typeof(HttpStatusCode), request.responseCode.ToString ());
-			RestResult<T> result = new RestResult<T> (statusCode);
-
-			if (result.IsError) {
-				result.ErrorMessage = "Response failed with status: " + statusCode.ToString ();
-				return result;
-			}
-
-			if (string.IsNullOrEmpty (request.downloadHandler.text)) {
-				result.IsError = true;
-				result.ErrorMessage = "Response has empty body";
-				return result;
-			}
-
-			if (isArray) {
-				// try parse an array of objects
-				result.AnArrayOfObjects = JsonHelper.GetJsonArray<T> (request.downloadHandler.text);
-				if (result.AnArrayOfObjects == null) {
-					result.IsError = true;
-					result.ErrorMessage = "Failed to parse an array of objects of type: " + typeof(T).ToString ();
-				}
-			} else {
-				// try parse an object
-				result.AnObject = JsonUtility.FromJson<T> (request.downloadHandler.text);
-				if (result.AnObject == null) {
-					result.IsError = true;
-					result.ErrorMessage = "Failed to parse object of type: " + typeof(T).ToString ();
-				}
-			}
+            RestResult<T> result = GetRestResult<T>();
+            // try parse an array of objects
+            try
+            {
+                result.AnArrayOfObjects = JsonHelper.FromJsonArray<T>(request.downloadHandler.text);
+            }
+            catch (Exception e)
+            {
+                result.IsError = true;
+                result.ErrorMessage = "Failed to parse an array of objects of type: " + typeof(T).ToString() + " Exception message: " + e.Message;
+            }
 			return result;
 		}
 
-		/// <summary>
-		/// Parses object with T data = JsonUtil.FromJson<T>, then callback RestResponse<T>
-		/// </summary>
-		public void ParseData<T> (Action<IRestResponse<T>> callback = null)
+        private RestResult<T> TryParseJson<T>()
+        {
+            RestResult<T> result = GetRestResult<T>();
+            // try parse an object
+            try
+            {
+                result.AnObject = JsonUtility.FromJson<T>(request.downloadHandler.text);
+            }
+            catch (Exception e)
+            {
+                result.IsError = true;
+                result.ErrorMessage = "Failed to parse object of type: " + typeof(T).ToString() + " Exception message: " + e.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Parses object with T data = JsonUtil.FromJson<T>, then callback RestResponse<T>
+        /// </summary>
+        public void ParseJson<T> (Action<IRestResponse<T>> callback = null)
 		{
-			RestResult<T> result = ParseResultAsAnArray<T> (false);
+			RestResult<T> result = TryParseJson<T> ();
 
 			if (result.IsError) {
 				Debug.LogWarning ("Response error status:" + result.StatusCode + " code:" + request.responseCode + " error:" + result.ErrorMessage + " request url:" + request.url);
@@ -90,17 +108,15 @@ namespace Unity3dAzure.AppServices
 			} else {
 				callback (new RestResponse<T> (result.StatusCode, request.url, request.downloadHandler.text, result.AnObject));
 			}
-
-			// all done, clean-up
-			request.Dispose ();
+            this.Dispose();
 		}
 
 		/// <summary>
 		/// Parses array of objects with T[] data = JsonHelper.GetJsonArray<T>, then callback RestResponse<T[]>
 		/// </summary>
-		public void ParseDataArray<T> (Action<IRestResponse<T[]>> callback = null)
+		public void ParseJsonArray<T> (Action<IRestResponse<T[]>> callback = null)
 		{
-			RestResult<T> result = ParseResultAsAnArray<T> (true);
+			RestResult<T> result = TryParseJsonArray<T> ();
 
 			if (result.IsError) {
 				Debug.LogWarning ("Response error status:" + result.StatusCode + " code:" + request.responseCode + " error:" + result.ErrorMessage + " request url:" + request.url);
@@ -108,12 +124,49 @@ namespace Unity3dAzure.AppServices
 			} else {
 				callback (new RestResponse<T[]> (result.StatusCode, request.url, request.downloadHandler.text, result.AnArrayOfObjects));
 			}
+            this.Dispose();
+        }
 
-			// all done, clean-up
-			request.Dispose ();
-		}
+        // *WSA
+        private RestResult<N> TryParseJsonNestedArray<T,N>(string namedArray) where N : INestedResults<T>, new()
+        {
+            RestResult<N> result = GetRestResult<N>();
+            // try parse an object
+            try
+            {
+                result.AnObject = JsonHelper.FromJsonNestedArray<T,N>(request.downloadHandler.text, namedArray); //JsonUtility.FromJson<N>(request.downloadHandler.text);
+            }
+            catch (Exception e)
+            {
+                result.IsError = true;
+                result.ErrorMessage = "Failed to parse object of type: " + typeof(N).ToString() + " Exception message: " + e.Message;
+            }
+            return result;
+        }
 
-		#endregion
+        // Work-around for nested array
+        public void ParseJsonNestedArray<T,N>(string namedArray, Action<IRestResponse<N>> callback = null) where N : INestedResults<T>, new()
+        {
+            RestResult<N> result = TryParseJsonNestedArray<T,N>(namedArray);
 
-	}
+            if (result.IsError)
+            {
+                Debug.LogWarning("Response error status:" + result.StatusCode + " code:" + request.responseCode + " error:" + result.ErrorMessage + " request url:" + request.url);
+                callback(new RestResponse<N>(result.ErrorMessage, result.StatusCode, request.url, request.downloadHandler.text));
+            }
+            else
+            {
+                callback(new RestResponse<N>(result.StatusCode, request.url, request.downloadHandler.text, result.AnObject));
+            }
+            this.Dispose();
+        }
+
+        public void Dispose()
+        {
+            request.Dispose(); // request completed, clean-up resources
+        }
+
+        #endregion
+
+    }
 }

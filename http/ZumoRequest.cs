@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System;
 
 namespace Unity3dAzure.AppServices
 {

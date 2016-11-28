@@ -29,7 +29,7 @@ namespace Unity3dAzure.AppServices
 			Debug.Log ("Insert Request: " + url);
 			request.AddBody (item);
 			yield return request.request.Send ();
-			request.ParseData<T> (callback);
+			request.ParseJson<T> (callback);
 		}
 
 		public IEnumerator Read<T> (Action<IRestResponse<T[]>> callback = null) where T : new()
@@ -38,7 +38,7 @@ namespace Unity3dAzure.AppServices
 			ZumoRequest request = new ZumoRequest (_client, url, Method.GET);
 			Debug.Log ("Read Request: " + url);
 			yield return request.request.Send ();
-			request.ParseDataArray<T> (callback);
+			request.ParseJsonArray<T> (callback);
 		}
 
 		public IEnumerator Query<T> (CustomQuery query, Action<IRestResponse<T[]>> callback = null) where T : new()
@@ -47,11 +47,11 @@ namespace Unity3dAzure.AppServices
 			ZumoRequest request = new ZumoRequest (_client, url, Method.GET);
 			Debug.Log ("Query Request: " + url + " Query:" + query);
 			yield return request.request.Send ();
-			request.ParseDataArray<T> (callback);
+			request.ParseJsonArray<T> (callback);
 		}
-
-		public IEnumerator Query<T> (CustomQuery query, Action<IRestResponse<T>> callback = null) where T : INestedResults, new()
-		{
+        /*
+		public IEnumerator Query<T,N> (CustomQuery query, Action<IRestResponse<N>> callback = null) where N : INestedResults<T> where T : new()
+        {
 			string queryString = query.ToString ();
 			string q = queryString.Length > 0 ? "&" : "?";
 			queryString += string.Format ("{0}$inlinecount=allpages", q);
@@ -59,10 +59,22 @@ namespace Unity3dAzure.AppServices
 			Debug.Log ("Query Request: " + url + " Paginated Query:" + query);
 			ZumoRequest request = new ZumoRequest (_client, url, Method.GET);
 			yield return request.request.Send ();
-			request.ParseData<T> (callback);
+			request.TryParseJsonNestedArray<T,N> ("results", callback);
 		}
+        */
+        public IEnumerator Query<T>(CustomQuery query, Action<IRestResponse<NestedResults<T>>> callback = null) where T : new()
+        {
+            string queryString = query.ToString();
+            string q = queryString.Length > 0 ? "&" : "?";
+            queryString += string.Format("{0}$inlinecount=allpages", q);
+            string url = string.Format("{0}/{1}{2}{3}", _client.AppUrl, URI_TABLES, _name, queryString);
+            Debug.Log("Query Request: " + url + " Paginated Query:" + query);
+            ZumoRequest request = new ZumoRequest(_client, url, Method.GET);
+            yield return request.request.Send();
+            request.ParseJsonNestedArray<T, NestedResults<T>>("results", callback);
+        }
 
-		public IEnumerator Update<T> (T item, Action<IRestResponse<T>> callback = null) where T : new()
+        public IEnumerator Update<T> (T item, Action<IRestResponse<T>> callback = null) where T : new()
 		{
 			string id = null;
 			// Check if model uses the 'IDataModel' Interface to get id property, otherwise try Refelection (using 'Model' helper).
@@ -84,7 +96,7 @@ namespace Unity3dAzure.AppServices
 			request.AddBody (item);
 			Debug.Log ("Update Request Url: " + url + " patch:" + item);
 			yield return request.request.Send ();
-			request.ParseData<T> (callback);
+			request.ParseJson<T> (callback);
 		}
 
 		public IEnumerator Delete<T> (string id, Action<IRestResponse<T>> callback = null) where T : new()
@@ -93,7 +105,7 @@ namespace Unity3dAzure.AppServices
 			ZumoRequest request = new ZumoRequest (_client, url, Method.DELETE);
 			Debug.Log ("Delete Request Url: " + url);
 			yield return request.request.Send ();
-			request.ParseData<T> (callback);
+			request.ParseJson<T> (callback);
 		}
 
 		public IEnumerator Lookup<T> (string id, Action<IRestResponse<T>> callback = null) where T : new()
@@ -102,7 +114,7 @@ namespace Unity3dAzure.AppServices
 			ZumoRequest request = new ZumoRequest (_client, url, Method.GET);
 			Debug.Log ("Lookup Request Url: " + url);
 			yield return request.request.Send ();
-			request.ParseData<T> (callback);
+			request.ParseJson<T> (callback);
 		}
 
 	}

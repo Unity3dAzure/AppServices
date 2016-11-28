@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 
 namespace Unity3dAzure.AppServices
 {
@@ -71,6 +70,9 @@ namespace Unity3dAzure.AppServices
 		}
 	}
 
+    /// <summary>
+    /// Parsed JSON result could either be an object or an array of objects
+    /// </summary>
 	internal sealed class RestResult<T> : Response
 	{
 		public T AnObject { get; set; }

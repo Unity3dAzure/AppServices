@@ -6,4 +6,15 @@
 	public interface INestedResults
 	{
 	}
+
+    public interface INestedResults<T>
+    {
+        // work-around for WSA
+        string GetArrayField();
+        string GetCountField();
+
+        void SetArray(T[] array);
+        void SetCount(uint count);
+        
+    }
 }

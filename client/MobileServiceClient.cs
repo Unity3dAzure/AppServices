@@ -57,7 +57,7 @@ namespace Unity3dAzure.AppServices
 			ZumoRequest request = new ZumoRequest (this, url, Method.POST);
 			request.AddBodyAccessToken (token);
 			yield return request.request.Send ();
-			request.ParseData<MobileServiceUser> (callback);
+			request.ParseJson<MobileServiceUser> (callback);
 		}
 
 		/// <summary>
@@ -87,7 +87,7 @@ namespace Unity3dAzure.AppServices
 			Debug.Log (httpMethod.ToString () + " custom API Request Url: " + url);
 			ZumoRequest request = new ZumoRequest (this, url, httpMethod);
 			yield return request.request.Send ();
-			request.ParseData<T> (callback);
+			request.ParseJson<T> (callback);
 		}
 
 		/// <summary>
@@ -100,7 +100,7 @@ namespace Unity3dAzure.AppServices
 			ZumoRequest request = new ZumoRequest (this, url, httpMethod);
 			request.AddBody<T> (body);
 			yield return request.request.Send ();
-			request.ParseData<T> (callback);
+			request.ParseJson<T> (callback);
 		}
 
 		/// <summary>

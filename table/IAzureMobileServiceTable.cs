@@ -32,14 +32,14 @@ namespace Unity3dAzure.AppServices
 		/// </summary>
 		IEnumerator Query<T> (CustomQuery query, Action<IRestResponse<T[]>> callback = null) where T : new();
 
-		/// <summary>
-		/// Returns a 'count' and nested list of 'results' (appends `$inlinecount=allpages` parameter to the query)
-		/// </summary>
-		IEnumerator Query<T> (CustomQuery query, Action<IRestResponse<T>> callback = null) where T : INestedResults, new();
+        /// <summary>
+        /// Returns a 'count' and nested list of 'results' (appends `$inlinecount=allpages` parameter to the query)
+        /// </summary>
+        IEnumerator Query<T>(CustomQuery query, Action<IRestResponse<NestedResults<T>>> callback = null) where T : new();
 
-		/// <summary>
-		/// Get an item's data using id property. 
-		/// </summary>
-		IEnumerator Lookup<T> (string id, Action<IRestResponse<T>> callback = null) where T : new();
+        /// <summary>
+        /// Get an item's data using id property. 
+        /// </summary>
+        IEnumerator Lookup<T> (string id, Action<IRestResponse<T>> callback = null) where T : new();
 	}
 }
