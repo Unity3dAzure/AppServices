@@ -1,8 +1,11 @@
-﻿namespace Unity3dAzure.AppServices
+﻿using System;
+
+namespace Unity3dAzure.AppServices
 {
-    public class MobileServiceUser
-    {
-        public string authenticationToken { get; set; }
-        public User user { get; set; }
-    }
+	[Serializable]
+	public class MobileServiceUser
+	{
+		public string authenticationToken;
+		public User user;
+	}
 }

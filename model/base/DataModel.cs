@@ -1,37 +1,81 @@
 ﻿using System;
-using System.ComponentModel;
-using Pathfinding.Serialization.JsonFx;
+using UnityEngine;
 
 namespace Unity3dAzure.AppServices
 {
 	[Serializable]
-	[CLSCompliant(false)]
 	public class DataModel : IDataModel
-    {
-		public string id { get; set; }
+	{
+		[SerializeField] 
+		public string id;
 
-		// system properties
-		[JsonIgnore] public DateTime createdAt { get; private set; }
-		[JsonIgnore] public DateTime updatedAt { get; private set; }
-		[JsonIgnore] public string version { get; private set; }
-		[JsonIgnore] public bool deleted { get; private set; }
-
-		// `$inlinecount=allpages` property
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		[JsonIgnore] public uint ROW_NUMBER { get; private set; }
-		public uint GetIndex()
+		public string GetId ()
 		{
-			return ROW_NUMBER;
+			return id;
 		}
 
-        public string GetId()
-        {
-            return id;
-        }
+		public void SetId (string id)
+		{
+			this.id = id;
+		}
+
+		// System Properties (read only)
+		[SerializeField] 
+		private string createdAt;
+		private DateTime? _createdAt;
+
+		public DateTime? CreatedAt ()
+		{
+			if (_createdAt == null) {
+				_createdAt = Convert.ToDateTime (createdAt);
+			}
+			return _createdAt;
+		}
+
+		[SerializeField] 
+		private string updatedAt;
+		private DateTime? _updatedAt;
+
+		public DateTime? UpdatedAt ()
+		{
+			if (_updatedAt == null) {
+				_updatedAt = Convert.ToDateTime (updatedAt);
+			}
+			return _updatedAt;
+		}
+
+		[SerializeField] 
+		private string version;
+
+		public string Version ()
+		{
+			return version;
+		}
+
+		[SerializeField] 
+		private bool deleted;
+
+		public bool Deleted ()
+		{
+			return deleted;
+		}
+
+		[SerializeField]
+		private string ROW_NUMBER;
+
+		public uint RowNumber ()
+		{
+			return Convert.ToUInt32 (ROW_NUMBER, 10);
+		}
 
 		public override string ToString ()
 		{
-			return string.Format ("id:{0}, createdAt:{1}, updatedAt:{2}, version:{3}, deleted:{4}, index:{5}", id, createdAt, updatedAt, version, deleted, GetIndex());
+			return JsonUtility.ToJson (this);
 		}
-    }
+
+		public string ToJSON ()
+		{
+			return JsonHelper.ToJsonExcludingSystemProperties (this);
+		}
+	}
 }

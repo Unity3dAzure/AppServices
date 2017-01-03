@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using RestSharp;
 using System.Collections.Generic;
 using System;
 using System.Text.RegularExpressions;
@@ -14,149 +13,115 @@ using System.Net.Security;
 
 namespace Unity3dAzure.AppServices
 {
-	[CLSCompliant(false)]
-    public class MobileServiceClient : RestClient, IAzureMobileServiceClient
-    {
-        public string AppUrl { get; private set; }
-        public string AppKey { get; private set; }
+	public class MobileServiceClient : IAzureMobileServiceClient
+	{
+		public string AppUrl { get; private set; }
 
-        public MobileServiceUser User { get; set; }
+		public MobileServiceUser User { get; set; }
 
-        public const string URI_API = "api/";
-
-        /// <summary>
-        /// Creates a new RestClient using Azure Mobile Service's Application Url and App Key
-        /// NB: Mobile Services should be migrated to use Azure App Service with constructor below.
-        /// </summary>
-        public MobileServiceClient(string appUrl, string appKey) : base(appUrl)
-        {
-            AppUrl = appUrl;
-            AppKey = appKey;
-
-            // required for running in Windows and Android
-            #if !NETFX_CORE || UNITY_ANDROID
-            Debug.Log("ServerCertificateValidation");
-            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
-            #endif
-        }
-
-    	/// <summary>
-    	/// Creates a new RestClient using Azure App Service's Application Url
-    	/// </summary>
-    	public MobileServiceClient(string appUrl) : base(appUrl)
-    	{
-			AppUrl = appUrl;
-			Debug.Log("AppUrl: " + AppUrl);
-
-            // required for running in Windows and Android
-            #if !NETFX_CORE || UNITY_ANDROID
-            Debug.Log("ServerCertificateValidation");
-            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
-            #endif
-        }
+		public const string URI_API = "api/";
 
 		/// <summary>
-		/// Using factory method forces app url to be changed from 'http' to 'https' url
+		/// Creates a new RestClient using Azure App Service's Application Url
 		/// </summary>
-		public static MobileServiceClient Create(string appUrl)
+		public MobileServiceClient (string appUrl)
 		{
-			return new MobileServiceClient (ForceHttps (appUrl));
-		}	
+			AppUrl = HttpsUri (appUrl);
+			Debug.Log ("App Url: " + AppUrl);
 
-        public override string ToString()
-        {
-            return this.BaseUrl;
-        }
+			// required for running in Windows and Android
+			#if !NETFX_CORE || UNITY_ANDROID
+			Debug.Log ("ServerCertificateValidation");
+			ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+			#endif
+		}
 
-        public MobileServiceTable<E> GetTable<E>(string tableName) where E : class
-        {
-            return new MobileServiceTable<E>(tableName, this);
-        }
+		public override string ToString ()
+		{
+			return this.AppUrl;
+		}
 
-        /// <summary>
-        /// Client-directed single sign on (POST with access token)
-        /// </summary>
-        public void Login(MobileServiceAuthenticationProvider provider, string token, Action<IRestResponse<MobileServiceUser>> callback = null)
-        {
-            string p = provider.ToString().ToLower();
-            string uri = IsAppService() ? ".auth/login/" + p : "login/" + p;
-            ZumoRequest request = new ZumoRequest(this, uri, Method.POST);
-            Debug.Log("Login Request Uri: " + uri + " access token: " + token);
-            request.AddBodyAccessToken(token);
-            this.ExecuteAsync(request, callback);
-        }
+		public MobileServiceTable<E> GetTable<E> (string tableName) where E : class
+		{
+			return new MobileServiceTable<E> (tableName, this);
+		}
 
-        /// <summary>
-        /// TODO: Service login (using GET via webview)
-        /// </summary>
-        /*
+		/// <summary>
+		/// Client-directed single sign on (POST with access token)
+		/// </summary>
+		public IEnumerator Login (MobileServiceAuthenticationProvider provider, string token, Action<IRestResponse<MobileServiceUser>> callback = null)
+		{
+			string p = provider.ToString ().ToLower ();
+			string url = string.Format ("{0}/.auth/login/{1}", AppUrl, p);
+			Debug.Log ("Login Request Url: " + url + " access token: " + token);
+			ZumoRequest request = new ZumoRequest (this, url, Method.POST);
+			request.AddBodyAccessToken (token);
+			yield return request.request.Send ();
+			request.ParseJson<MobileServiceUser> (callback);
+		}
+
+		/// <summary>
+		/// TODO: Service login (using GET via webview)
+		/// </summary>
+		/*
         public void Login(MobileServiceAuthenticationProvider provider)
         {
             Debug.Log("TODO");
         }
         //*/
 
-        /// <summary>
-        /// GET custom API
-        /// </summary>
-        public void InvokeApi<T>(string apiName, Action<IRestResponse<T>> callback = null) where T : new()
-        {
-			InvokeApi<T> (apiName, Method.GET, callback);
-        }
+		/// <summary>
+		/// GET custom API
+		/// </summary>
+		public IEnumerator InvokeApi<T> (string apiName, Action<IRestResponse<T>> callback = null) where T : new()
+		{
+			return InvokeApi<T> (apiName, Method.GET, callback);
+		}
 
 		/// <summary>
 		/// Invokes custom API for HTTP Methods: GET, POST, PUT, PATCH, DELETE
 		/// </summary>
-		public void InvokeApi<T>(string apiName, Method httpMethod, Action<IRestResponse<T>> callback = null) where T : new()
+		public IEnumerator InvokeApi<T> (string apiName, Method httpMethod, Action<IRestResponse<T>> callback = null) where T : new()
 		{
-			string uri = URI_API + apiName;
-			ZumoRequest request = new ZumoRequest(this, uri, httpMethod);
-			Debug.Log( httpMethod.ToString() + " custom API Request Uri: " + uri );
-			this.ExecuteAsync(request, callback);
+			string url = string.Format ("{0}/{1}{2}", AppUrl, URI_API, apiName);
+			Debug.Log (httpMethod.ToString () + " custom API Request Url: " + url);
+			ZumoRequest request = new ZumoRequest (this, url, httpMethod);
+			yield return request.request.Send ();
+			request.ParseJson<T> (callback);
 		}
 
 		/// <summary>
 		/// Invokes custom API with body
 		/// </summary>
-		public void InvokeApi<T>(string apiName, Method httpMethod, T body, Action<IRestResponse<T>> callback = null) where T : new()
+		public IEnumerator InvokeApi<T> (string apiName, Method httpMethod, T body, Action<IRestResponse<T>> callback = null) where T : new()
 		{
-			string uri = URI_API + apiName;
-			ZumoRequest request = new ZumoRequest(this, uri, httpMethod);
-			request.AddBody (body);
-			Debug.Log( httpMethod.ToString() + " custom API Request Uri: " + uri );
-			this.ExecuteAsync(request, callback);
+			string url = string.Format ("{0}/{1}{2}", AppUrl, URI_API, apiName);
+			Debug.Log (httpMethod.ToString () + " custom API Request Url: " + url);
+			ZumoRequest request = new ZumoRequest (this, url, httpMethod);
+			request.AddBody<T> (body);
+			yield return request.request.Send ();
+			request.ParseJson<T> (callback);
 		}
 
 		/// <summary>
-		/// When you copy the URL is is 'http' by default, but its preferable to use 'https'
+		/// When you copy the URL from the Azure Portal it is 'http' by default, but it needs to be 'https' for post
 		/// </summary>
-		private static string ForceHttps(string appUrl) 
+		private static string HttpsUri (string appUrl)
 		{
-			return Regex.Replace(appUrl, "(?m)http://", "https://");
+			return Regex.Replace (appUrl, "(?si)^http://", "https://").TrimEnd ('/');
 		}
 
-        /// <summary>
-        /// Mobile Service uses an AppKey, but App Service does not.
-        /// </summary>
-        public bool IsAppService()
-        {
-          return String.IsNullOrEmpty(AppKey);
-        }
+		#if !NETFX_CORE || UNITY_ANDROID
+		private bool RemoteCertificateValidationCallback (System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+		{
+			//   Check the certificate to see if it was issued from Azure
+			if (certificate.Subject.Contains ("azurewebsites.net")) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		#endif
 
-        #if !NETFX_CORE || UNITY_ANDROID
-        private bool RemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-        {
-            //   Check the certificate to see if it was issued from Azure
-            if (certificate.Subject.Contains("azurewebsites.net"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        #endif
-
-    }
+	}
 }

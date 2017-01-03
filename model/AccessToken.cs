@@ -1,18 +1,21 @@
-﻿namespace Unity3dAzure.AppServices
+﻿using System;
+
+namespace Unity3dAzure.AppServices
 {
-    public class AccessToken
-    {
-		public string access_token { get; set; }
-		
+	[Serializable]
+	public class AccessToken
+	{
+		public string access_token;
+
 		/// <summary>
 		/// Facebook, Google, AAD access_token request
 		/// </summary>
-		public AccessToken(string accessTokenValue)
+		public AccessToken (string accessTokenValue)
 		{
 			access_token = accessTokenValue;
 		}
 
-        /// Needed only for Serialization (Fixes error: AccessToken cannot be serialized. Consider marking it with the DataContractAttribute attribute, and marking all of its members you want serialized with the DataMemberAttribute attribute)
-        public AccessToken() {}
-    }
+		// Must have a public parameterless contructor in order to use it as paramter 'T' in the generic type or method RestRequest.AddBody<T>
+		//public AccessToken() {}
+	}
 }
