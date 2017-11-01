@@ -1,10 +1,9 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Unity3dAzure.AppServices
-{
-	[Serializable]
-	public class ResponseError
-	{
-		public string error;
-	}
+namespace Azure.AppServices {
+  [System.Serializable]
+  public class ResponseError {
+    public string error;
+  }
 }

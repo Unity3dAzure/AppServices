@@ -1,7 +1,8 @@
-﻿namespace Unity3dAzure.AppServices
-{
-	public interface IDataModel
-	{
-		string GetId ();
-	}
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+namespace Azure.AppServices {
+  public interface IDataModel {
+    string GetId();
+  }
 }

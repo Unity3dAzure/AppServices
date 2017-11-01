@@ -1,16 +1,18 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Azure.AppServices {
   [System.Serializable]
-  public class AccessToken {
+  public class AccessTokenId {
     public string access_token;
+    public string id_token;
 
     /// <summary>
-    /// Facebook, Microsoft Account, Azure Active Directory "access_token" request body
+    /// Google+ "access_token" and "id_token" request body
     /// </summary>
-    public AccessToken(string accessTokenValue) {
+    public AccessTokenId(string accessTokenValue, string idTokenValue) {
       access_token = accessTokenValue;
+      id_token = idTokenValue;
     }
   }
 }
