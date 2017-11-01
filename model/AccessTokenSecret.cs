@@ -11,8 +11,8 @@ namespace Azure.AppServices {
     /// Twitter with "access_token" and "access_token_secret" request body
     /// </summary>
     public AccessTokenSecret(string accessTokenValue, string accessTokenSecret) {
-      access_token = accessTokenValue;
-      access_token_secret = accessTokenSecret;
+      access_token = accessTokenValue.Trim();
+      access_token_secret = accessTokenSecret.Trim();
     }
   }
 }

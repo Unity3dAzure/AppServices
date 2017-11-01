@@ -10,7 +10,7 @@ namespace Azure.AppServices {
     /// Facebook, Microsoft Account, Azure Active Directory "access_token" request body
     /// </summary>
     public AccessToken(string accessTokenValue) {
-      access_token = accessTokenValue;
+      access_token = accessTokenValue.Trim();
     }
   }
 }

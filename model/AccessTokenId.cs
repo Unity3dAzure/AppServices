@@ -11,8 +11,8 @@ namespace Azure.AppServices {
     /// Google+ "access_token" and "id_token" request body
     /// </summary>
     public AccessTokenId(string accessTokenValue, string idTokenValue) {
-      access_token = accessTokenValue;
-      id_token = idTokenValue;
+      access_token = accessTokenValue.Trim();
+      id_token = idTokenValue.Trim();
     }
   }
 }
