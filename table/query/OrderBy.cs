@@ -23,7 +23,7 @@ namespace Azure.AppServices {
 
     public override string ToString() {
       if (!string.IsNullOrEmpty(column)) {
-        string sort = (columnSortDirection != null) ? " " + columnSortDirection : "";
+        string sort = (columnSortDirection != null) ? "+" + columnSortDirection : "";
         return column + sort;
       }
       return "";
