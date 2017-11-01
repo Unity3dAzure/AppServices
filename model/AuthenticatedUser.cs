@@ -3,7 +3,8 @@
 
 namespace Azure.AppServices {
   [System.Serializable]
-  public class User {
-    public string userId;
+  public class AuthenticatedUser {
+    public string authenticationToken;
+    public User user;
   }
 }
