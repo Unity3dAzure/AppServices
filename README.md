@@ -12,8 +12,8 @@ Please be aware this latest update of the library brings a number of changes to 
 Requires Unity v5.3 or greater as [UnityWebRequest](https://docs.unity3d.com/Manual/UnityWebRequest.html) and [JsonUtility](https://docs.unity3d.com/ScriptReference/JsonUtility.html) features are used. Unity will be extending platform support for UnityWebRequest so keep Unity up to date if you need to support these additional platforms.
 
 ## How to setup App Services with a new Unity project
-1. [Download AppServices](https://github.com/Unity3dAzure/AppServices/archive/master.zip)
-	* Copy 'AppServices' into project `Assets` folder.
+1. [Download AppServices](https://github.com/Unity3dAzure/AppServices/archive/master.zip) and [REST Client](https://github.com/Unity3dAzure/RESTClient/archive/master.zip) for Unity.
+	* Copy 'AppServices' and 'RESTClient' into project `Assets` folder.
 2. Create an Azure App Service [Mobile App](https://portal.azure.com)
 	* Create a Table (using Easy Tables) for app data.
 
