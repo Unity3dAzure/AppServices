@@ -42,6 +42,10 @@ namespace Azure.AppServices {
     }
 
     public override void AddBody<T>(T data, string contentType = "application/json; charset=utf-8") {
+      if (typeof(T) == typeof(string)) {
+        this.AddBody(data.ToString(), contentType);
+        return;
+      }
       string jsonString = excludeSystemProperties ? JsonHelper.ToJsonExcludingSystemProperties(data) : JsonUtility.ToJson(data);
       byte[] bytes = Encoding.UTF8.GetBytes(jsonString);
       this.AddBody(bytes, contentType);
